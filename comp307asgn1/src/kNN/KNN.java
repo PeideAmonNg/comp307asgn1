@@ -21,15 +21,13 @@ public class KNN {
 		String testFile=ar[1];
 
 
-		List<Iris> trainingIrises=getIrises(trainingFile);
-		List<Iris> testIrises=getIrises(testFile);
+		List<Iris> trainingIrises=readIrisFromFile(trainingFile);
+		List<Iris> testIrises=readIrisFromFile(testFile);
 
-		System.out.println(trainingIrises.size());
-		System.out.println(testIrises.size());
 		testClassifier(trainingIrises, testIrises);
 	}
 
-	public static List<Iris> getIrises(String fileName){
+	public static List<Iris> readIrisFromFile(String fileName){
 		BufferedReader br = null;
 		List<Iris> irises=new ArrayList<Iris>();
 		try {
@@ -61,12 +59,11 @@ public class KNN {
 			if(className.equals(iris.getClassName())){
 				correct++;
 			}
-			//sort the list.
-			//according to k, choose the number of neighbors.
-			}
-		System.out.println(((double)correct)/testIrises.size());
+		}
+		System.out.printf("correct classification: %.1f%%", ((double)correct)/testIrises.size()*100);
 	}
 	
+	//helper class
 	public static String findClass(List<DistDiff> diffList){
 		Map<String, Integer> map=new HashMap<String, Integer>();
 		for(int i=0;i<KNN.k;i++){
@@ -77,13 +74,21 @@ public class KNN {
 				map.put(diff.getClassName(), 1);
 			}
 		}
-		return null;
+		
+		int max=0;
+		String className=null;
+		for (Map.Entry<String, Integer> entry : map.entrySet()){
+			if(entry.getValue()>max){
+				className=entry.getKey();
+			}
+		}
+		return className;
 	}
 
 
 	//compare each test iris with all training irises
 	//Result: a set of objects with distances and class name.
-	private static List<DistDiff> compareIrises(Iris testIris, List<Iris> trainingIrises){
+	public static List<DistDiff> compareIrises(Iris testIris, List<Iris> trainingIrises){
 		List<DistDiff> diffList=new ArrayList<DistDiff>();		
 		for(Iris iris:trainingIrises){
 			double totalDiff=0d;
@@ -96,10 +101,6 @@ public class KNN {
 		}
 		return diffList;
 	}
-
-
-
-
 }
 
 class IrisComparator implements Comparator<DistDiff>{
