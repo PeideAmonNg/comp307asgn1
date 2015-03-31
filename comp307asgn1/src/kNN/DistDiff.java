@@ -14,7 +14,10 @@ public class DistDiff {
 	public double getDist(){
 		return dist;
 	}
-
+	
+	public String getClassName(){
+		return this.className;
+	}
 
 }
 

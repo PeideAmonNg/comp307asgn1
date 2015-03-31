@@ -12,12 +12,8 @@ public class Iris {
 		this.className=className;
 	}
 
-	public double getAttributeSum(){
-		double total=0d;
-		for(double attr:attributes){
-			total+=attr;
-		}
-		return total;
+	public double[] getAttributes(){
+		return this.attributes;
 	}
 
 	public String getClassName(){

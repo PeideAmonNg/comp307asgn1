@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class KNN {
 
-	private int k=5;
+	public static int k=5;
+	public static int attrNo=4;
 
 
 	public static void main(String[] ar) {
@@ -23,6 +26,7 @@ public class KNN {
 
 		System.out.println(trainingIrises.size());
 		System.out.println(testIrises.size());
+		testClassifier(trainingIrises, testIrises);
 	}
 
 	public static List<Iris> getIrises(String fileName){
@@ -34,11 +38,11 @@ public class KNN {
 			while ((currentLine = br.readLine()) != null) {
 				String[] values=currentLine.split("  ");
 				if(values.length==5){
-					double[] doubles=new double[4];
-					for(int i=0;i<4;i++){
+					double[] doubles=new double[KNN.attrNo];
+					for(int i=0;i<KNN.attrNo;i++){
 						doubles[i]=Double.parseDouble(values[i]);
 					}
-					irises.add(new Iris(doubles, values[4]));
+					irises.add(new Iris(doubles, values[KNN.attrNo]));
 				}
 			}
 			br.close();
@@ -48,24 +52,46 @@ public class KNN {
 		return irises;
 	}
 
-	public static void testClassifier(List<Iris> trainingIrises, List<Iris> testIrises, String testFile){
+	public static void testClassifier(List<Iris> trainingIrises, List<Iris> testIrises){
+		int correct=0;
 		for(Iris iris:testIrises){
 			List<DistDiff> diffList=compareIrises(iris, trainingIrises);
 			Collections.sort(diffList, new IrisComparator());
-			//sort the set.
-			//according to k, choose the number of neighbours.
-
+			String className=findClass(diffList);
+			if(className.equals(iris.getClassName())){
+				correct++;
+			}
+			//sort the list.
+			//according to k, choose the number of neighbors.
+			}
+		System.out.println(((double)correct)/testIrises.size());
+	}
+	
+	public static String findClass(List<DistDiff> diffList){
+		Map<String, Integer> map=new HashMap<String, Integer>();
+		for(int i=0;i<KNN.k;i++){
+			DistDiff diff=diffList.get(i);
+			if(map.containsKey(diff.getClassName())){
+				map.put(diff.getClassName(), map.get(diff.getClassName())+1);
+			}else{
+				map.put(diff.getClassName(), 1);
+			}
 		}
+		return null;
 	}
 
 
 	//compare each test iris with all training irises
 	//Result: a set of objects with distances and class name.
 	private static List<DistDiff> compareIrises(Iris testIris, List<Iris> trainingIrises){
-		List<DistDiff> diffList=new ArrayList<DistDiff>();
+		List<DistDiff> diffList=new ArrayList<DistDiff>();		
 		for(Iris iris:trainingIrises){
-			double diff=Math.abs(testIris.getAttributeSum()-iris.getAttributeSum());
-			DistDiff distDiff=new DistDiff(diff, iris.getClassName());
+			double totalDiff=0d;
+			for(int i=0;i<KNN.attrNo;i++){
+				totalDiff+=Math.pow(testIris.getAttributes()[i]-iris.getAttributes()[i], 2);
+			}
+			
+			DistDiff distDiff=new DistDiff(Math.sqrt(totalDiff), iris.getClassName());
 			diffList.add(distDiff);
 		}
 		return diffList;
