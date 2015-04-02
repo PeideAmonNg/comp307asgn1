@@ -31,5 +31,6 @@ public class Instance {
 			ans.append(val ? "true  " : "false ");
 		return ans.toString();
 	}
+		
 
 }

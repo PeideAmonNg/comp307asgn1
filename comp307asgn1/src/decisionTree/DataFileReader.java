@@ -12,7 +12,7 @@ public class DataFileReader {
 			// assumes that the enclosing class has fields:
 			int numCategories;
 			int numAtts;
-			List<String> attNames;
+			static List<String> attNames;
 			List<Instance> allInstances;
 			static List<String> categoryNames;
 
